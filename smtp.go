@@ -64,6 +64,10 @@ func (v *Verifier) CheckSMTP(domain, username string) (*SMTP, error) {
 		return &ret, ParseSMTPError(err)
 	}
 
+	if err = client.Rcpt(email); err == nil {
+		ret.Deliverable = true
+	}
+
 	// Host exists if we've successfully formed a connection
 	ret.HostExists = true
 
@@ -103,10 +107,6 @@ func (v *Verifier) CheckSMTP(domain, username string) (*SMTP, error) {
 	// no need to calibrate deliverable on a specific user
 	if username == "" {
 		return &ret, nil
-	}
-
-	if err = client.Rcpt(email); err == nil {
-		ret.Deliverable = true
 	}
 
 	return &ret, nil
